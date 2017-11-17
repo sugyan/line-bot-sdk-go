@@ -40,6 +40,7 @@ const (
 	APIEndpointGetRoomMemberProfile  = "/v2/bot/room/%s/member/%s"
 	APIEndpointGetGroupMemberIDs     = "/v2/bot/group/%s/members/ids"
 	APIEndpointGetRoomMemberIDs      = "/v2/bot/room/%s/members/ids"
+	APIEndpointIssueAccessToken      = "/v2/oauth/accessToken"
 )
 
 // Client type
@@ -135,5 +136,14 @@ func (client *Client) post(ctx context.Context, endpoint string, body io.Reader)
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	return client.do(ctx, req)
+}
+
+func (client *Client) postform(ctx context.Context, endpoint string, body io.Reader) (*http.Response, error) {
+	req, err := http.NewRequest("POST", client.url(endpoint), body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	return client.do(ctx, req)
 }

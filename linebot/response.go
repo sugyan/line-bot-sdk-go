@@ -56,6 +56,13 @@ type MessageContentResponse struct {
 	ContentType   string
 }
 
+// AccessTokenResponse type
+type AccessTokenResponse struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int64  `json:"expires_in"`
+	TokenType   string `json:"token_type"`
+}
+
 func checkResponse(res *http.Response) error {
 	if res.StatusCode != http.StatusOK {
 		decoder := json.NewDecoder(res.Body)
@@ -117,6 +124,18 @@ func decodeToMessageContentResponse(res *http.Response) (*MessageContentResponse
 		Content:       res.Body,
 		ContentType:   res.Header.Get("Content-Type"),
 		ContentLength: res.ContentLength,
+	}
+	return &result, nil
+}
+
+func decodeToAccessTokenResponse(res *http.Response) (*AccessTokenResponse, error) {
+	if err := checkResponse(res); err != nil {
+		return nil, err
+	}
+	decoder := json.NewDecoder(res.Body)
+	result := AccessTokenResponse{}
+	if err := decoder.Decode(&result); err != nil {
+		return nil, err
 	}
 	return &result, nil
 }
