@@ -56,6 +56,31 @@ type MessageContentResponse struct {
 	ContentType   string
 }
 
+// RichMenuIDResponse type
+type RichMenuIDResponse struct {
+	RichMenuID string `json:"richMenuId"`
+}
+
+// RichMenuResponse type
+type RichMenuResponse struct {
+	RichMenuID  string       `json:"richMenuId"`
+	Size        RichMenuSize `json:"size"`
+	Selected    bool         `json:"selected"`
+	Name        string       `json:"name"`
+	ChatBarText string       `json:"chatBarText"`
+	Areas       []AreaDetail `json:"areas"`
+}
+
+// LIFFResponse type
+type LIFFResponse struct {
+	Apps []LIFFAPP `json:"apps"`
+}
+
+// LinkTokenResponse type
+type LinkTokenResponse struct {
+	LinkToken string `json:"linkToken"`
+}
+
 // AccessTokenResponse type
 type AccessTokenResponse struct {
 	AccessToken string `json:"access_token"`
@@ -87,6 +112,9 @@ func decodeToBasicResponse(res *http.Response) (*BasicResponse, error) {
 	decoder := json.NewDecoder(res.Body)
 	result := BasicResponse{}
 	if err := decoder.Decode(&result); err != nil {
+		if err == io.EOF {
+			return &result, nil
+		}
 		return nil, err
 	}
 	return &result, nil
@@ -124,6 +152,80 @@ func decodeToMessageContentResponse(res *http.Response) (*MessageContentResponse
 		Content:       res.Body,
 		ContentType:   res.Header.Get("Content-Type"),
 		ContentLength: res.ContentLength,
+	}
+	return &result, nil
+}
+
+func decodeToRichMenuResponse(res *http.Response) (*RichMenuResponse, error) {
+	if err := checkResponse(res); err != nil {
+		return nil, err
+	}
+	decoder := json.NewDecoder(res.Body)
+	result := RichMenuResponse{}
+	if err := decoder.Decode(&result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func decodeToRichMenuListResponse(res *http.Response) ([]*RichMenuResponse, error) {
+	if err := checkResponse(res); err != nil {
+		return nil, err
+	}
+	decoder := json.NewDecoder(res.Body)
+	var result = struct {
+		RichMenus []*RichMenuResponse `json:"richmenus"`
+	}{}
+	if err := decoder.Decode(&result); err != nil {
+		return nil, err
+	}
+	return result.RichMenus, nil
+}
+
+func decodeToRichMenuIDResponse(res *http.Response) (*RichMenuIDResponse, error) {
+	if err := checkResponse(res); err != nil {
+		return nil, err
+	}
+	decoder := json.NewDecoder(res.Body)
+	result := RichMenuIDResponse{}
+	if err := decoder.Decode(&result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func decodeToLIFFResponse(res *http.Response) (*LIFFResponse, error) {
+	if err := checkResponse(res); err != nil {
+		return nil, err
+	}
+	decoder := json.NewDecoder(res.Body)
+	result := &LIFFResponse{}
+	if err := decoder.Decode(result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func decodeToLIFFIDResponse(res *http.Response) (*LIFFIDResponse, error) {
+	if err := checkResponse(res); err != nil {
+		return nil, err
+	}
+	decoder := json.NewDecoder(res.Body)
+	result := LIFFIDResponse{}
+	if err := decoder.Decode(&result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func decodeToLinkTokenResponse(res *http.Response) (*LinkTokenResponse, error) {
+	if err := checkResponse(res); err != nil {
+		return nil, err
+	}
+	decoder := json.NewDecoder(res.Body)
+	result := LinkTokenResponse{}
+	if err := decoder.Decode(&result); err != nil {
+		return nil, err
 	}
 	return &result, nil
 }
