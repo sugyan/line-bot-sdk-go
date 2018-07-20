@@ -55,7 +55,8 @@ const (
 
 	APIEndpointLinkToken = "/v2/bot/user/%s/linkToken"
 
-	APIEndpointIssueAccessToken = "/v2/oauth/accessToken"
+	APIEndpointIssueAccessToken  = "/v2/oauth/accessToken"
+	APIEndpointRevokeAccessToken = "/v2/oauth/revoke"
 )
 
 // Client type
