@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
@@ -45,6 +46,8 @@ const (
 	APIEndpointGetUserRichMenu       = "/v2/bot/user/%s/richmenu"
 	APIEndpointLinkUserRichMenu      = "/v2/bot/user/%s/richmenu/%s"
 	APIEndpointUnlinkUserRichMenu    = "/v2/bot/user/%s/richmenu"
+	APIEndpointSetDefaultRichMenu    = "/v2/bot/user/all/richmenu/%s"
+	APIEndpointDefaultRichMenu       = "/v2/bot/user/all/richmenu"   // Get: GET / Delete: DELETE
 	APIEndpointDownloadRichMenuImage = "/v2/bot/richmenu/%s/content" // Download: GET / Upload: POST
 	APIEndpointUploadRichMenuImage   = "/v2/bot/richmenu/%s/content" // Download: GET / Upload: POST
 
@@ -176,4 +179,10 @@ func (client *Client) delete(ctx context.Context, endpoint string) (*http.Respon
 		return nil, err
 	}
 	return client.do(ctx, req)
+}
+
+func closeResponse(res *http.Response) error {
+	defer res.Body.Close()
+	_, err := io.Copy(ioutil.Discard, res.Body)
+	return err
 }
